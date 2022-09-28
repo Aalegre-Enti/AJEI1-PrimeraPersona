@@ -12,8 +12,11 @@ public class FirstPersonCharacterController : MonoBehaviour
     [Range(1f, 2f)]
     public float groundCheck = 1.1f;
     public bool grounded;
+    public bool Jetpack;
     public float jumpStrength = 100;
     public float jetpackStrength = 100;
+    public int max_jumps = 2;
+    int jumps = 0;
     float jumpCounter;
     float deposit = 1;
     public Rigidbody rb;
@@ -30,6 +33,7 @@ public class FirstPersonCharacterController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void FixedUpdate()
@@ -38,6 +42,7 @@ public class FirstPersonCharacterController : MonoBehaviour
         if (Physics.Raycast(transform.position, -transform.up, out hit, groundCheck))
         {
             grounded = true;
+            jumps = 0;
             Debug.DrawRay(transform.position, -transform.up * groundCheck, Color.green);
         }
         else
@@ -65,24 +70,26 @@ public class FirstPersonCharacterController : MonoBehaviour
     }
     void Jump()
     {
-        if (Input.GetButtonDown("Jump") && grounded && jumpCounter <= 0)
+        if (Input.GetButtonDown("Jump") && jumpCounter <= 0 && jumps < max_jumps)
         {
+            jumps++;
             jumpCounter = .25f;
             rb.AddForce(transform.up * jumpStrength);
         }
         jumpCounter = jumpCounter - Time.deltaTime;
-        if (grounded)
-        {
-            deposit = Mathf.Clamp01(deposit + Time.deltaTime);
-        }
-        else
-        {
-            if (Input.GetButton("Jump") && deposit > 0 && jumpCounter <= 0)
-            {
-                deposit -= Time.deltaTime;
-                rb.AddForce(transform.up * jetpackStrength * Time.deltaTime);
-            }
-        }
+
+        //if (grounded)
+        //{
+        //    deposit = Mathf.Clamp01(deposit + Time.deltaTime);
+        //}
+        //else
+        //{
+        //    if (Input.GetButton("Jump") && deposit > 0 && jumpCounter <= 0)
+        //    {
+        //        deposit -= Time.deltaTime;
+        //        rb.AddForce(transform.up * jetpackStrength * Time.deltaTime);
+        //    }
+        //}
     }
     void LateUpdate()
     {
