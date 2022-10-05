@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BulletRaycast : MonoBehaviour
 {
+    public LineRenderer line;
     public string tag = "Enemy";
     public void Fire()
     {
@@ -16,10 +17,21 @@ public class BulletRaycast : MonoBehaviour
             {
                 hit.collider.GetComponent<Destruible>().Ejecutar();
             }
+            line.SetPosition(1, Vector3.forward * hit.distance);
+            StartCoroutine(QuitarLinea());
         }
         else
         {
             Debug.DrawRay(transform.position, transform.forward * 1000, Color.red, 1);
+
+            line.SetPosition(1, Vector3.forward * 1000);
+            StartCoroutine(QuitarLinea());
         }
+    }
+
+    IEnumerator QuitarLinea()
+    {
+        yield return new WaitForSeconds(0.1f);
+        line.SetPosition(1, new Vector3(0,0,0));
     }
 }
